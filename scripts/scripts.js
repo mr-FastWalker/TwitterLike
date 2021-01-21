@@ -1,4 +1,25 @@
 
+class FetchData {
+    getResourse = async url => {
+        const res = await fetch (url);
+
+        if (!res.ok) {
+            throw new Error ("Ошибка: " + res.status)
+        }
+
+        return res.json();
+    }
+
+    getPost = async () => await this.getResourse('db/database.json');
+}
+
+const obj = new FetchData()
+
+obj.getPost().then((data) => {
+    console.log(data)
+})
+
+
 
 class Twitter {
     constructor({ listElem }) {
@@ -52,14 +73,14 @@ class Posts {
 
 
 class Post {
-    constructor (param) {
-        this.id = param.id;
-        this.userName = param.userName;
-        this.nickName = param.nickName;
-        this.postDate = param.postDate;
-        this.text = param.text;
-        this.img = param.img;
-        this.likes = param.likes;
+    constructor ({id, userName, nickName, postDate, text, img, likes = 0 }) {
+        this.id = id || this.generateId();
+        this.userName = userName;
+        this.nickName = nickName;
+        this.postDate = postDate ? new Date (postDate) : new Date();
+        this.text = text;
+        this.img = img;
+        this.likes = likes;
         this.liked = false;
     }
 
@@ -71,10 +92,30 @@ class Post {
             this.likes--;
         }
     };
+
+    generateId () {
+        return (Math.random().toString(32).substring(2, 9) + (+new Date).toString(32));
+    };
+
+    getDate () {
+        const options = {
+            year: 'numeric',
+            month: 'numeric',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        };
+        return this.postDate.toLocaleString('ru-RU', options);
+    }
 }
 
 const twitter = new Twitter ({
     listElem: '.tweet-list'
 })
 
-console.log ('twitter: ', twitter);
+twitter.tweets.addPost({});
+
+
+
+
+
