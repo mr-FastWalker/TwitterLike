@@ -15,14 +15,15 @@ class FetchData {
 
 
 class Twitter {
-    constructor({ user, listElem, modalElems, tweetElems }) {
+    constructor({ user, listElem, modalElems, tweetElems, tweetFormElems }) {
         const fetchData = new FetchData();
         this.user = user;
         this.tweets = new Posts();
         this.elements = {
             listElem: document.querySelector(listElem),
             modal: modalElems, //это можно писать без двоеточия, просто modalElems > тут пределили имя (modal)
-            tweetElems //такой синтаксис без двоеточия, то же что (имя: элемент)
+            tweetElems, //такой синтаксис без двоеточия, то же что (имя: элемент)
+            tweetFormElems
         };
 
         fetchData.getPost()
@@ -32,8 +33,8 @@ class Twitter {
             });
 
         this.elements.modal.forEach(this.handlerModal, this);  //используем то имя, которое определили выше (modal)
-
         this.elements.tweetElems.forEach(this.addTweet, this); //назначаем метод для добавления твитов this передает для доступа к tweetElems
+        this.elements.tweetFormElems.forEach(this.addTweet, this);    
     }
 
     renderPosts (posts) {
@@ -121,17 +122,22 @@ class Twitter {
         let imgUrl = '';
         let tempString = textElem.innerHTML;
 
+        
         submitElem.addEventListener('click', () => {
-            this.tweets.addPost({
-                userName: this.user.name,
-                nickName: this.user.nick,
-                text: textElem.innerHTML,
-                img: imgUrl
-            })
-            this.showAllPost();
-            this.closeModal();
-            textElem.innerHTML = tempString;
-        })
+            
+            if (textElem.innerHTML != tempString) {
+                this.tweets.addPost({
+                    userName: this.user.name,
+                    nickName: this.user.nick,
+                    text: textElem.innerHTML,
+                    img: imgUrl
+                })
+                this.showAllPost();
+                this.closeModal();
+             textElem.innerHTML = tempString;
+            }             
+        });
+        
 
         textElem.addEventListener('click', () => {
             if (textElem.innerHTML === tempString) {
@@ -216,6 +222,13 @@ const twitter = new Twitter ({
             text: '.modal .tweet-form__text',
             img: '.modal .tweet-img__btn',
             submit: '.modal .tweet-form__btn'
+        }
+    ],
+    tweetFormElems: [
+        {
+            text: '.tweet-form .tweet-form__text',
+            img: '.tweet-form .tweet-img__btn',
+            submit: '.tweet-form .tweet-form__btn'
         }
     ]
 })
